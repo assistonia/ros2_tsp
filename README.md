@@ -12,6 +12,7 @@
 ## 사용 방법
 
 ```bash
+source /opt/ros/humble/setup.bash
 python3 time_estimate.py
 ```
 
