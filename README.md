@@ -67,3 +67,58 @@ python3 time_estimate.py
 ### 물체 좌표 수정 방법
 
 물체 좌표는 `publish_issacsim.txt` 파일에서 수정할 수 있습니다:
+
+```
+# 형식: 이름,x좌표,y좌표,z좌표
+Chungmu1,-25.54326,119.27288,1.0502
+Chungmu2,-52.4361,134.70523,1.03068
+Object1,-82.71,86.87,1.0
+Object2,-91.37,96.45,1.0
+Object3,-83.19,86.85,1.0
+Object4,-75.75,79.82,1.0
+Object5,-84.44,93.18,1.0
+```
+
+### 웨이포인트 순서 확인
+
+최적 경로 계산 결과는 `/robot/optimal_route` 토픽을 통해 다음과 같이 발행됩니다:
+
+```json
+{
+  "route": ["Chungmu1", "Object3", "Object1", "Object4", "Object5", "Object2", "Chungmu2"],
+  "time": 152.34,
+  "distance": 76.17
+}
+```
+
+웨이포인트 좌표는 `/robot/optimal_path` 토픽을 통해 Path 메시지 형태로 발행됩니다.
+
+### 데이터 확인
+
+토픽 메시지 확인:
+```bash
+# Isaac Sim 좌표계 물체 위치 (원본)
+ros2 topic echo /isaac_sim/object_positions
+
+# 변환된 ROS2 좌표계 물체 위치
+ros2 topic echo /object_positions
+
+# 최적 경로 정보Q
+ros2 topic echo /robot/optimal_route
+
+# 경로 좌표
+ros2 topic echo /robot/optimal_path
+```
+
+## 직접 개발한 좌표 변환 파라미터
+
+Isaac Sim과 ROS2 좌표계 간의 변환식:
+```
+ROS2_x = 1.050398 * ISAAC_x + 0.052001 * ISAAC_y + 80.194741
+ROS2_y = -0.021784 * ISAAC_x + 1.011847 * ISAAC_y + -62.842775
+```
+
+## 기존 TSP Solver와의 통합
+
+이 시스템은 기존의 [ROS2 TSP Solver](https://github.com/assistonia/ros2_tsp) 기능을 확장하여 Isaac Sim 좌표를 통합한 버전입니다.
+
