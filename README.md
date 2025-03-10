@@ -36,46 +36,21 @@ Isaac Sim과 ROS2 좌표계 간의 변환 및 최적 경로 계획을 위한 통
 
 ## 사용 방법
 
-### 설치 및 빌드
+### 환경 설정 및 실행
+
+ROS2 환경을 설정하고 각 스크립트를 직접 실행합니다:
 
 ```bash
-<<<<<<< HEAD
-source /opt/ros/humble/setup.bash
-python3 time_estimate.py
-=======
 # ROS2 환경 설정
 source /opt/ros/humble/setup.bash
 
-# 패키지 클론
-git clone https://github.com/yourusername/ros2_coordinate_system.git ~/ros2_ws/src/
-
-# 빌드
-cd ~/ros2_ws
-colcon build
-source install/setup.bash
->>>>>>> 2d5b0ef (Isaac Sim - ROS2 좌표 변환 및 경로 계획 시스템 구현)
+# 각 노드 실행 (별도의 터미널에서)
+python3 isaac_sim_publisher.py
+python3 coordinate_transformer.py
+python3 path_time_calculator.py
 ```
 
-### 실행
-
-전체 시스템 실행:
-```bash
-ros2 launch ros2_coordinate_system robot_coordinate_system.launch.py
-```
-
-개별 노드 실행:
-```bash
-# Isaac Sim 물체 위치 발행 (목업)
-ros2 run ros2_coordinate_system isaac_sim_publisher.py
-
-# 좌표 변환
-ros2 run ros2_coordinate_system coordinate_transformer.py
-
-# 경로 계획 및 시간 계산
-ros2 run ros2_coordinate_system path_time_calculator.py
-```
-
-## 데이터 확인
+### 데이터 확인
 
 토픽 메시지 확인:
 ```bash
