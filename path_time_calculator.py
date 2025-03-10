@@ -31,7 +31,7 @@ class PathTimeCalculator(Node):
         # 구독자 설정
         self.ros2_position_subscription = self.create_subscription(
             String,
-            '/ros2/object_positions',  # 변환된 ROS2 물체 위치 토픽
+            '/object_positions',  # 변환된 ROS2 물체 위치 토픽
             self.position_callback,
             10
         )

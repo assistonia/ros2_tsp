@@ -28,7 +28,7 @@ class CoordinateTransformer(Node):
         # 발행자 설정
         self.ros2_position_publisher = self.create_publisher(
             String,
-            '/ros2/object_positions',  # 변환된 ROS2 물체 위치 토픽
+            '/object_positions',  # 변환된 ROS2 물체 위치 토픽
             10
         )
         
@@ -71,10 +71,11 @@ class CoordinateTransformer(Node):
             
             # 발행
             self.ros2_position_publisher.publish(ros2_position_msg)
-            self.get_logger().info(f"ROS2 좌표로 변환 완료: {len(ros2_positions)} 물체")
+            # 너무 많은 로그가 출력되므로 주석 처리
+            # self.get_logger().info(f"ROS2 좌표로 변환 완료: {len(ros2_positions)} 물체")
             
             # 로그로 변환 결과 예시 출력 (첫 번째 물체만)
-            if ros2_positions:
+            if ros2_positions and False:  # 로그 비활성화
                 obj_name = list(ros2_positions.keys())[0]
                 isaac_pos = isaac_positions[obj_name]
                 ros2_pos = ros2_positions[obj_name]

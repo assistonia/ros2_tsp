@@ -19,49 +19,95 @@ Isaac Sim과 ROS2 좌표계 간의 변환 및 최적 경로 계획을 위한 통
 - 이동 시간 및 거리 추정
 - 최적 경로 정보를 ROS2 토픽으로 발행
 
-## 시스템 구성
+## 시스템 구성 및 토픽 흐름
 
-시스템은 세 개의 독립적인 노드로 구성되어 있습니다:
+시스템은 세 개의 독립적인 노드로 구성되어 있으며, 다음과 같은 토픽 흐름을 갖습니다:
 
-1. **isaac_sim_publisher.py**: Isaac Sim 물체 위치를 발행하는 노드
-2. **coordinate_transformer.py**: 좌표계 변환을 수행하는 노드
-3. **path_time_calculator.py**: 경로 계획 및 시간 계산을 수행하는 노드
+1. **isaac_sim_publisher.py**
+   - 발행 토픽: `/isaac_sim/object_positions`
+   - 기능: Isaac Sim 좌표계의 물체 위치 데이터 발행
+   - 데이터 소스: `publish_issacsim.txt` 파일에서 물체 좌표 로드 가능
 
-## 통신 토픽
+2. **coordinate_transformer.py**
+   - 구독 토픽: `/isaac_sim/object_positions`
+   - 발행 토픽: `/object_positions`
+   - 기능: Isaac Sim 좌표계를 ROS2 좌표계로 변환
 
-- `/isaac_sim/object_positions`: Isaac Sim 좌표계 물체 위치
-- `/ros2/object_positions`: 변환된 ROS2 좌표계 물체 위치
-- `/robot/optimal_route`: 계산된 최적 경로 정보
-- `/robot/optimal_path`: 경로 좌표 정보
+3. **path_time_calculator.py**
+   - 구독 토픽: `/object_positions`
+   - 발행 토픽: 
+     - `/robot/optimal_route` (경로 정보)
+     - `/robot/optimal_path` (경로 좌표)
+   - 기능: 변환된 좌표를 기반으로 최적 이동 경로 계산
 
 ## 사용 방법
 
-### 환경 설정 및 실행
-
-ROS2 환경을 설정하고 각 스크립트를 직접 실행합니다:
+### 기본 설정 및 실행
 
 ```bash
 # ROS2 환경 설정
 source /opt/ros/humble/setup.bash
 
-# 각 노드 실행 (별도의 터미널에서)
+# 개별 노드 실행 (각각 별도의 터미널에서)
 python3 isaac_sim_publisher.py
 python3 coordinate_transformer.py
 python3 path_time_calculator.py
 ```
 
+### 기존 TSP 시스템 실행
+
+```bash
+# ROS2 환경 설정
+source /opt/ros/humble/setup.bash
+
+# 기존 TSP 시간 계산 시스템 실행
+python3 time_estimate.py
+```
+
+### 물체 좌표 수정 방법
+
+물체 좌표는 `publish_issacsim.txt` 파일에서 수정할 수 있습니다:
+
+```
+# 형식: 이름,x좌표,y좌표,z좌표
+Chungmu1,-25.54326,119.27288,1.0502
+Chungmu2,-52.4361,134.70523,1.03068
+Object1,-82.71,86.87,1.0
+Object2,-91.37,96.45,1.0
+Object3,-83.19,86.85,1.0
+Object4,-75.75,79.82,1.0
+Object5,-84.44,93.18,1.0
+```
+
+### 웨이포인트 순서 확인
+
+최적 경로 계산 결과는 `/robot/optimal_route` 토픽을 통해 다음과 같이 발행됩니다:
+
+```json
+{
+  "route": ["Chungmu1", "Object3", "Object1", "Object4", "Object5", "Object2", "Chungmu2"],
+  "time": 152.34,
+  "distance": 76.17
+}
+```
+
+웨이포인트 좌표는 `/robot/optimal_path` 토픽을 통해 Path 메시지 형태로 발행됩니다.
+
 ### 데이터 확인
 
 토픽 메시지 확인:
 ```bash
-# Isaac Sim 물체 위치
+# Isaac Sim 좌표계 물체 위치 (원본)
 ros2 topic echo /isaac_sim/object_positions
 
-# 변환된 ROS2 좌표
-ros2 topic echo /ros2/object_positions
+# 변환된 ROS2 좌표계 물체 위치
+ros2 topic echo /object_positions
 
-# 최적 경로
+# 최적 경로 정보
 ros2 topic echo /robot/optimal_route
+
+# 경로 좌표
+ros2 topic echo /robot/optimal_path
 ```
 
 ## 직접 개발한 좌표 변환 파라미터
