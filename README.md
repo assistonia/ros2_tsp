@@ -103,7 +103,7 @@ ros2 topic echo /isaac_sim/object_positions
 # 변환된 ROS2 좌표계 물체 위치
 ros2 topic echo /object_positions
 
-# 최적 경로 정보
+# 최적 경로 정보Q
 ros2 topic echo /robot/optimal_route
 
 # 경로 좌표
